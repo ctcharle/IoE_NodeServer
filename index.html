@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<script>
+
+var client = new WebSocket('ws://52.35.130.158:8080/', 'browser');
+ 
+client.onerror = function() {
+    console.log('Connection Error');
+};
+ 
+client.onopen = function() {
+    console.log('WebSocket Client Connected');
+};
+ 
+client.onclose = function() {
+    console.log('Browser Client Closed');
+};
+ 
+client.onmessage = function(e) {
+    if (typeof e.data === 'string') {
+        var parsed_string = e.data.split(",");
+        console.log("Received: '" + e.data + "'");
+        document.getElementById('TempLine').innerHTML = "Temperature = " + parsed_string[0] + String.fromCharCode(176);
+        document.getElementById('StateLine').innerHTML = "State = " + parsed_string[1];
+    }
+};
+
+function changeState(btn){
+    var property = document.getElementById(btn);
+    if (property.value == "OFF"){
+        property.style.backgroundColor = "#80FF00";
+		property.value = "ON";
+		client.send("turn_on");
+	}
+    else{
+		property.style.backgroundColor = "#C0C0C0"
+		property.value = "OFF";
+		client.send("turn_off");
+	}
+}
+
+</script>
+
+<head>
+  <title>Internet Espresso</title>
+</head>
+
+<body>
+
+<h1>Internet Espresso</h1>
+
+<input type="button" id="button" value = "OFF" style= "background-color: #C0C0C0; height: 40px; width: 80px" onclick="changeState('button')"/>
+ 
+<p id="TempLine">Temperature = 0 &#8451;</p>
+<p id="StateLine">State = OFF</p>
+
+</body>
+
+</html>
